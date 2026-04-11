@@ -10,8 +10,8 @@
 #define HALO_MSG (0)
 
 extern int setCudaDevice(int rank);
-extern void runCuda(int device, int *x, int *y, size_t w, size_t h);
-extern void cudaUnifiedMalloc(int** x, size_t nBytes);
+extern void runCuda(int device, bool *x, bool *y, size_t w, size_t h);
+extern void cudaUnifiedMalloc(bool** x, size_t nBytes);
 extern void cudaUnifiedFree(void* x);
 
 typedef unsigned long long ticks;
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
   int numElements = w * h;
   int blockSz = numElements / world_sz;
   int s = sqrt(blockSz);
-  assert(s * s == blockSz && w % s == 0 && h % s == 0); //TODO: FIX THIS
+  assert(s * s == blockSz && w % s == 0 && h % s == 0);
   
   MPI_Datatype column_type;
   MPI_Type_vector(
@@ -147,9 +147,11 @@ int main(int argc, char** argv)
     MPI_Waitall(8, reqs, status);
 
     int device = setCudaDevice(world_rank);
-    runCuda(device, local + (s + 3), swap + (s + 3), s, s);
+    runCuda(device, local, swap, s, s);
 
-    MPI_File_open(MPI_COMM_WORLD, outputDir + "/step_" + j, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &outFile);
+    char outputFileName[strlen(outputDir) + 17];
+    snprintf(outputFileName, sizeof(outputFileName), "%s/step_%d", outputDir, j);
+    MPI_File_open(MPI_COMM_WORLD, outputFileName, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &outFile);
     for(int k = 1; k <= s; ++k) { 
       bool* start = local + (k * (s + 2));
 
