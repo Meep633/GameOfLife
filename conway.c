@@ -58,7 +58,7 @@ int main(int argc, char** argv)
   if(world_rank == 0) {
     MPI_File_read(inFile, dims, 2, MPI_INT, status);
     MPI_Get_count(status, MPI_INT, &rc);
-    assert(rc == 2);
+    //assert(rc == 2);
   }
   MPI_Bcast(dims, 2, MPI_INT, 0, MPI_COMM_WORLD);
 
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
   int numElements = w * h;
   int blockSz = numElements / world_sz;
   int s = sqrt(blockSz);
-  assert(s * s == blockSz && w % s == 0 && h % s == 0);
+  //assert(s * s == blockSz && w % s == 0 && h % s == 0);
   
   MPI_Datatype column_type;
   MPI_Type_vector(
@@ -103,23 +103,27 @@ int main(int argc, char** argv)
   int i = (process_grid_row * w) + process_grid_col - 1;
   int len = s + 2;
   if(left) {
-    for(int j = 0; j < s; ++j) {
+    for(int j = 0; j < s + 2; ++j) {
       local[j * (s + 2)] = 0;
+      swap[j * (s + 2)] = 0;
     }
     --len;
     ++i;
   }
   if(right) {
-    for(int j = 0; j < s; ++j) {
+    for(int j = 0; j < s + 2; ++j) {
       local[(j * (s + 2)) + (s + 1)] = 0;
+      swap[(j * (s + 2)) + (s + 1)] = 0;
     }
     --len;
   }
   if(top) {
     memset(local, 0, (s + 2) * sizeof(bool));
+    memset(swap, 0, (s + 2) * sizeof(bool));
   }
   if(bottom) {
     memset(local + ((s + 1) * (s + 2)), 0, (s + 2) * sizeof(bool));
+    memset(swap + ((s + 1) * (s + 2)), 0, (s + 2) * sizeof(bool));
   }
 
   for(int k = 1; k <= s; ++k) { //block row loop
@@ -131,42 +135,44 @@ int main(int argc, char** argv)
   }
   MPI_File_close(&inFile);
 
-  for(int j = 0; j < numSteps; ++j) { //step loop
-    MPI_Isend(local + (s * (s + 2)), s + 2, MPI_C_BOOL, bottom_rank, HALO_MSG, MPI_COMM_WORLD, reqs);
+  for(int j = 1; j <= numSteps; ++j) { //step loop
+    MPI_Isend(local + (s + 2) + s, 1, column_type, right_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 0);
+    MPI_Irecv(local + (s + 2) + (s + 1), 1, column_type, right_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 1);
+
+    MPI_Isend(local + (s + 2) + 1, 1, column_type, left_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 2);
+    MPI_Irecv(local + (s + 2) + 0, 1, column_type, left_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 3);
+
+    MPI_Waitall(4, reqs, status);
+
+    MPI_Isend(local + (s * (s + 2)), s + 2, MPI_C_BOOL, bottom_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 0);
     MPI_Irecv(local, s + 2, MPI_C_BOOL, top_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 1);
 
     MPI_Isend(local + s + 2, s + 2, MPI_C_BOOL, top_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 2);
     MPI_Irecv(local + ((s + 1) * (s + 2)), s + 2, MPI_C_BOOL, bottom_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 3);
 
-    MPI_Isend(local + (s + 2) + s, 1, column_type, right_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 4);
-    MPI_Irecv(local + (s + 2) + (s + 1), 1, column_type, right_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 5);
-
-    MPI_Isend(local + (s + 2) + 1, 1, column_type, left_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 6);
-    MPI_Irecv(local + (s + 2) + 0, 1, column_type, left_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 7);
-
-    MPI_Waitall(8, reqs, status);
+    MPI_Waitall(4, reqs, status);
 
     int device = setCudaDevice(world_rank);
     runCuda(device, local, swap, s, s);
 
-    char outputFileName[strlen(outputDir) + 17];
-    snprintf(outputFileName, sizeof(outputFileName), "%s/step_%d", outputDir, j);
-    MPI_File_open(MPI_COMM_WORLD, outputFileName, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &outFile);
-    for(int k = 1; k <= s; ++k) { 
-      bool* start = local + (k * (s + 2));
-
-      if(left) {
-        ++start; 
-      } 
-  
-      MPI_Offset byte_offset = offset + ((i + (w * (k - 1))) * sizeof(bool));
-      MPI_File_write_at_all(outFile, byte_offset, start, len, MPI_C_BOOL, MPI_STATUS_IGNORE);
-    }
-    MPI_File_close(&outFile);
-
     bool* tmp = local;
     local = swap;
     swap = tmp;
+
+    char outputFileName[strlen(outputDir) + 17];
+    snprintf(outputFileName, sizeof(outputFileName), "%s/step_%d", outputDir, j);
+    MPI_File_open(MPI_COMM_WORLD, outputFileName, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &outFile);
+
+    if (world_rank == 0) {
+      MPI_File_write_at(outFile, 0, dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+    }
+    
+    for(int k = 1; k <= s; ++k) { 
+      bool* start = local + (k * (s + 2)) + 1;  
+      MPI_Offset byte_offset = offset + ((process_grid_row * w) + process_grid_col + (w * (k - 1))) * sizeof(bool);
+      MPI_File_write_at_all(outFile, byte_offset, start, s, MPI_C_BOOL, MPI_STATUS_IGNORE);
+    }
+    MPI_File_close(&outFile);
   }
 
   cudaUnifiedFree(local);

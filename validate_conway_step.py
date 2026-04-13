@@ -32,12 +32,12 @@ def conway(arr):
     out = [[0 for _ in range(n)] for _ in range(m)]
     for i in range(m):
         for j in range(n):
-            alive_neighbors = count_neighbors(arr, m, n)
+            alive_neighbors = count_neighbors(arr, i, j)
             
             if arr[i][j]:
-                out[i][j] = (alive_neighbors == 2 or alive_neighbors == 3)
+                out[i][j] = int(alive_neighbors == 2 or alive_neighbors == 3)
             else:
-                out[i][j] = (alive_neighbors == 3)
+                out[i][j] = int(alive_neighbors == 3)
     return out
 
 def main():
