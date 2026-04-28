@@ -1,0 +1,18 @@
+NOTE: NVMe not available, using GPFS fallback: /gpfs/u/scratch/PCPG/PCPGnhnx/results/tmp_job_4268870
+=== np=9 | binary=conway | steps=100 | job=4268870 ===
+Nodes=3 | Tasks/Node=3
+Script dir: /gpfs/u/home/PCPG/PCPGnhnx/scratch/p
+Input: /gpfs/u/scratch/PCPG/PCPGnhnx/results/tmp_job_4268870/board_strong.bin
+
+--------------------------------------------------------------------------
+An ORTE daemon has unexpectedly failed after launch and before
+communicating back to mpirun. This could be caused by a number
+of factors, including an inability to create a connection back
+to mpirun due to a lack of common network interfaces and/or no
+route found between them. Please check network connectivity
+(including firewalls and network routing requirements).
+--------------------------------------------------------------------------
+Done. Results in /gpfs/u/scratch/PCPG/PCPGnhnx/results/strong_cuda/np_9/results_np9.csv
+slurmstepd: error: Prolog hung on node dcs215
+slurmstepd: error: Prolog hung on node dcs213
+slurmstepd: error: Prolog hung on node dcs214

@@ -1,0 +1,7 @@
+NOTE: NVMe not available, using GPFS fallback: /gpfs/u/scratch/PCPG/PCPGnhnx/results/tmp_job_4268855
+=== np=1 | binary=conway | steps=100 | job=4268855 ===
+Nodes=1 | Tasks/Node=1
+Script dir: /var/spool/slurm/d/job4268855
+Input: /gpfs/u/scratch/PCPG/PCPGnhnx/results/tmp_job_4268855/board_1.bin
+
+ERROR: binary ./conway not found in /var/spool/slurm/d/job4268855

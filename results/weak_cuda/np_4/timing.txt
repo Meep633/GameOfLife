@@ -1,0 +1,9 @@
+=== np=4 | binary=conway | steps=100 | job=4268881 ===
+Nodes=1 | Tasks/Node=4
+Script dir: /gpfs/u/home/PCPG/PCPGnhnx/scratch/p
+Input: /gpfs/u/scratch/PCPG/PCPGnhnx/results/tmp_job_4268881/board_4.bin
+
+Rank  0 | Total:   0.2801 s | Comm:   0.2462 s ( 87.9%) | Compute:   0.0131 s (  4.7%) | IO:   0.0208 s (  7.4%)
+Rank  1 | Total:   0.2801 s | Comm:   0.0057 s (  2.0%) | Compute:   0.2536 s ( 90.5%) | IO:   0.0208 s (  7.4%)
+Rank  2 | Total:   0.2801 s | Comm:   0.0094 s (  3.3%) | Compute:   0.2499 s ( 89.2%) | IO:   0.0208 s (  7.4%)
+Rank  3 | Total:   0.2802 s | Comm:   0.0056 s (  2.0%) | Compute:   0.2536 s ( 90.5%) | IO:   0.0210 s (  7.5%)

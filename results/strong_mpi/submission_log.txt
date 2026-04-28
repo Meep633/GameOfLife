@@ -1,0 +1,18 @@
+=== Conway Scaling Study: strong ===
+Binary: conway-mpi | Steps: 100
+
+Submitting np=1 | 1N x 1T x 4GPU
+Submitted batch job 4268874
+Submitting np=4 | 1N x 4T x 4GPU
+Submitted batch job 4268875
+Submitting np=9 | 3N x 3T x 3GPU
+Submitted batch job 4268876
+Submitting np=16 | 4N x 4T x 4GPU
+Submitted batch job 4268877
+Submitting np=25 | 5N x 5T x 5GPU
+Submitted batch job 4268878
+Submitting np=36 | 6N x 6T x 6GPU
+Submitted batch job 4268879
+
+Monitor:  squeue -u $USER
+Merge:    cat /gpfs/u/scratch/PCPG/PCPGnhnx/results/strong_mpi/np_*/results_np*.csv > /gpfs/u/scratch/PCPG/PCPGnhnx/results/strong_mpi/all_results.csv

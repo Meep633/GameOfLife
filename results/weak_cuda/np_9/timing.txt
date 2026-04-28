@@ -1,0 +1,14 @@
+=== np=9 | binary=conway | steps=100 | job=4268882 ===
+Nodes=3 | Tasks/Node=3
+Script dir: /gpfs/u/home/PCPG/PCPGnhnx/scratch/p
+Input: /gpfs/u/scratch/PCPG/PCPGnhnx/results/tmp_job_4268882/board_9.bin
+
+Rank  0 | Total:   0.7549 s | Comm:   0.1950 s ( 25.8%) | Compute:   0.0116 s (  1.5%) | IO:   0.5482 s ( 72.6%)
+Rank  2 | Total:   0.7548 s | Comm:   0.0260 s (  3.4%) | Compute:   0.1806 s ( 23.9%) | IO:   0.5482 s ( 72.6%)
+Rank  6 | Total:   0.7548 s | Comm:   0.1942 s ( 25.7%) | Compute:   0.0124 s (  1.6%) | IO:   0.5482 s ( 72.6%)
+Rank  7 | Total:   0.7549 s | Comm:   0.0303 s (  4.0%) | Compute:   0.1763 s ( 23.4%) | IO:   0.5482 s ( 72.6%)
+Rank  4 | Total:   0.7547 s | Comm:   0.0184 s (  2.4%) | Compute:   0.1881 s ( 24.9%) | IO:   0.5482 s ( 72.6%)
+Rank  5 | Total:   0.7549 s | Comm:   0.0194 s (  2.6%) | Compute:   0.1872 s ( 24.8%) | IO:   0.5482 s ( 72.6%)
+Rank  3 | Total:   0.7549 s | Comm:   0.1950 s ( 25.8%) | Compute:   0.0116 s (  1.5%) | IO:   0.5483 s ( 72.6%)
+Rank  8 | Total:   0.7550 s | Comm:   0.0303 s (  4.0%) | Compute:   0.1763 s ( 23.4%) | IO:   0.5484 s ( 72.6%)
+Rank  1 | Total:   0.7572 s | Comm:   0.0063 s (  0.8%) | Compute:   0.2004 s ( 26.5%) | IO:   0.5505 s ( 72.7%)

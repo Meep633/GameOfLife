@@ -70,6 +70,11 @@ void writeFile(bool** arr, int m, int n, char* outputDir, int step) {
 }
 
 int main(int argc, char** argv) {
+    if(argc != 5) {
+        fprintf(stderr, "USAGE: %s <InputFilePath> <OutputDirectory> <Steps> <WriteSteps>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
     char* inputFile = argv[1];
     char* outputDir = argv[2];
     int steps = atoi(argv[3]);
