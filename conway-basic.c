@@ -5,6 +5,22 @@
 #include <unistd.h>
 #include <string.h>
 
+typedef unsigned long long ticks;
+
+// IBM POWER9 System clock with 512MHZ resolution.
+static __inline__ ticks getticks(void)
+{
+  unsigned int tbl, tbu0, tbu1;
+
+  do {
+    __asm__ __volatile__ ("mftbu %0" : "=r"(tbu0));
+    __asm__ __volatile__ ("mftb %0" : "=r"(tbl));
+    __asm__ __volatile__ ("mftbu %0" : "=r"(tbu1));
+  } while (tbu0 != tbu1);
+
+  return (((unsigned long long)tbu0) << 32) | tbl;
+}
+
 int count_neighbors(bool** arr, int m, int n, int i, int j) {
     int cnt = 0;
     for (int r = i - 1; r <= i + 1; ++r) {
@@ -57,6 +73,7 @@ int main(int argc, char** argv) {
     char* inputFile = argv[1];
     char* outputDir = argv[2];
     int steps = atoi(argv[3]);
+    bool writeSteps = atoi(argv[4]);
     
     int fd = open(inputFile, O_RDONLY);
     if(fd == -1) {
@@ -79,13 +96,28 @@ int main(int argc, char** argv) {
 
     close(fd);
 
+    ticks start = getticks();
     for(int i = 0; i < steps; ++i) {
         conway(arr, swap, m, n);
-
-        writeFile(swap, m, n, outputDir, i);
+        if(writeSteps) {
+            writeFile(swap, m, n, outputDir, i);
+        }
         bool** tmp = swap;
         swap = arr;
         arr = tmp;
     }
+    ticks end = getticks();
+    double time = (double)(end - start) / (double)512000000.0;
+    printf("Total time to compute %d steps of Conways game of life is %lf seconds \n", steps, time);
+    if(!writeSteps) {
+        writeFile(arr, m, n, outputDir, steps);
+    }
+    for(int i = 0; i < m; ++i) {
+        free(arr[i]);
+        free(swap[i]);
+    }
+    free(arr);
+    free(swap);
+
     return 0;
 }

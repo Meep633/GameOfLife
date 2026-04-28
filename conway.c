@@ -49,6 +49,7 @@ int main(int argc, char** argv)
   char* outputDir = argv[2];
   MPI_File outFile;
   int numSteps = atoi(argv[3]);
+  bool writeSteps = atoi(argv[4]);
 
   MPI_Request reqs[8];
   MPI_Status status[8];
@@ -135,6 +136,7 @@ int main(int argc, char** argv)
   }
   MPI_File_close(&inFile);
 
+  ticks start = getticks();
   for(int j = 1; j <= numSteps; ++j) { //step loop
     MPI_Isend(local + (s + 2) + s, 1, column_type, right_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 0);
     MPI_Irecv(local + (s + 2) + (s + 1), 1, column_type, right_rank, HALO_MSG, MPI_COMM_WORLD, reqs + 1);
@@ -158,22 +160,27 @@ int main(int argc, char** argv)
     bool* tmp = local;
     local = swap;
     swap = tmp;
-
-    char outputFileName[strlen(outputDir) + 17];
-    snprintf(outputFileName, sizeof(outputFileName), "%s/step_%d", outputDir, j);
-    MPI_File_open(MPI_COMM_WORLD, outputFileName, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &outFile);
-
-    if (world_rank == 0) {
-      MPI_File_write_at(outFile, 0, dims, 2, MPI_INT, MPI_STATUS_IGNORE);
-    }
     
-    for(int k = 1; k <= s; ++k) { 
-      bool* start = local + (k * (s + 2)) + 1;  
-      MPI_Offset byte_offset = offset + ((process_grid_row * w) + process_grid_col + (w * (k - 1))) * sizeof(bool);
-      MPI_File_write_at_all(outFile, byte_offset, start, s, MPI_C_BOOL, MPI_STATUS_IGNORE);
+    if(writeSteps && j != numSteps) {
+      char outputFileName[strlen(outputDir) + 17];
+      snprintf(outputFileName, sizeof(outputFileName), "%s/step_%d", outputDir, j);
+      MPI_File_open(MPI_COMM_WORLD, outputFileName, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &outFile);
+
+      if (world_rank == 0) {
+        MPI_File_write_at(outFile, 0, dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+      }
+      
+      for(int k = 1; k <= s; ++k) { 
+        bool* start = local + (k * (s + 2)) + 1;  
+        MPI_Offset byte_offset = offset + ((process_grid_row * w) + process_grid_col + (w * (k - 1))) * sizeof(bool);
+        MPI_File_write_at_all(outFile, byte_offset, start, s, MPI_C_BOOL, MPI_STATUS_IGNORE);
+      }
+      MPI_File_close(&outFile);
     }
-    MPI_File_close(&outFile);
   }
+  ticks end = getticks();
+  double time = (double)(end - start) / (double)512000000.0;
+  printf("Total time to compute %d steps of Conways game of life is %lf seconds \n", numSteps, time);
 
   cudaUnifiedFree(local);
   cudaUnifiedFree(swap);
