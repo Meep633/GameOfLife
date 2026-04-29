@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
+import subprocess
+import datetime
 import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
 import numpy as np
+
+print("Regenerating CSVs from timing.txt files...")
+subprocess.run(["python3", "parse_results.py"], check=True)
 
 out_dir = "report_figures"
 os.makedirs(out_dir, exist_ok=True)
@@ -13,6 +18,10 @@ def load_data(study_name):
     path = f"results/{study_name}/all_results.csv"
     if not os.path.exists(path):
         return pd.DataFrame()
+
+    mtime = os.path.getmtime(path)
+    ts = datetime.datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M:%S")
+    print(f"  {study_name}: loaded {path}  (last modified: {ts})")
     df = pd.read_csv(path)
     return df[df['rank'] == 0].sort_values('np')
 
