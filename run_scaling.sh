@@ -39,7 +39,7 @@ submit_one() {
     --nodes=$NODES \
     --ntasks-per-node=$TPR \
     --gpus-per-node=$GPUS \
-    --gres=gpu:${GPUS} \
+    --gres=gpu:${GPUS},nvme \
     --time=00:30:00 \
     --chdir="$PWD" \
     -o "$RESULTS_DIR/np${NP}_%j.log" \

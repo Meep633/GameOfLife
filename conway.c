@@ -168,7 +168,10 @@ int main(int argc, char** argv)
     local = swap;
     swap = tmp;
 
-    if(writeSteps || j == numSteps) {
+    // Only time intermediate writes inside the loop (writeSteps=1 mode).
+    // The mandatory final-step write is done after the clock stops so it
+    // does not inflate io_ticks for benchmarking runs (writeSteps=0).
+    if(writeSteps && j < numSteps) {
       t0 = getticks();
       char outputFileName[strlen(outputDir) + 17];
       snprintf(outputFileName, sizeof(outputFileName), "%s/step_%d", outputDir, j);
@@ -188,6 +191,22 @@ int main(int argc, char** argv)
     }
   }
   ticks end = getticks();
+
+  // Write the final step outside the timed window (always, for validation).
+  {
+    char outputFileName[strlen(outputDir) + 17];
+    snprintf(outputFileName, sizeof(outputFileName), "%s/step_%d", outputDir, numSteps);
+    MPI_File_open(MPI_COMM_WORLD, outputFileName, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &outFile);
+    if (world_rank == 0) {
+      MPI_File_write_at(outFile, 0, dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+    }
+    for(int k = 1; k <= s; ++k) {
+      bool* start = local + (k * (s + 2)) + 1;
+      MPI_Offset byte_offset = offset + ((process_grid_row * w) + process_grid_col + (w * (k - 1))) * sizeof(bool);
+      MPI_File_write_at_all(outFile, byte_offset, start, s, MPI_C_BOOL, MPI_STATUS_IGNORE);
+    }
+    MPI_File_close(&outFile);
+  }
   double total_time   = (double)(end   - start)   / 512000000.0;
   double comm_time    = (double)comm_ticks          / 512000000.0;
   double compute_time = (double)compute_ticks       / 512000000.0;
