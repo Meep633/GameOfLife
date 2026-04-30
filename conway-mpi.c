@@ -208,7 +208,6 @@ int main(int argc, char **argv) {
       io_ticks += getticks() - t0;
     }
   }
-  ticks end_t = getticks();
 
   // Write the final step outside the timed window (always, for validation).
   {
@@ -232,6 +231,7 @@ int main(int argc, char **argv) {
     MPI_File_close(&outFile);
     io_ticks += getticks() - t0;
   }
+  ticks end_t = getticks();
   double total_time = (double)(end_t - start_t) / 512000000.0;
   double comm_time = (double)comm_ticks / 512000000.0;
   double compute_time = (double)compute_ticks / 512000000.0;
