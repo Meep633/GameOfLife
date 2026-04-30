@@ -59,12 +59,11 @@ if [[ "$MODE" == "strong" ]]; then
 
 elif [[ "$MODE" == "weak" ]]; then
   BOARDS_DIR=$2
-  submit_one  1  1  1  4 "$BOARDS_DIR/board_1.bin"
-  submit_one  4  1  4  4 "$BOARDS_DIR/board_4.bin"
-  submit_one  9  3  3  3 "$BOARDS_DIR/board_9.bin"
-  submit_one 16  4  4  4 "$BOARDS_DIR/board_16.bin"
-  submit_one 25  5  5  5 "$BOARDS_DIR/board_25.bin"
-  submit_one 36  6  6  6 "$BOARDS_DIR/board_36.bin"
+  submit_one  1  1  1  6 "$BOARDS_DIR/board_100.bin"
+  submit_one  4  1  4  6 "$BOARDS_DIR/board_200.bin"
+  submit_one  16  1  16  6 "$BOARDS_DIR/board_400.bin"
+  submit_one 64  2  32  6 "$BOARDS_DIR/board_800.bin"
+  submit_one 256  8  32  6 "$BOARDS_DIR/board_1600.bin"
 
 else
   echo "Unknown mode. Use: strong | weak"
