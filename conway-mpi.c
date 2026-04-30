@@ -212,6 +212,7 @@ int main(int argc, char **argv) {
 
   // Write the final step outside the timed window (always, for validation).
   {
+    t0 = getticks();
     char outputFileName[strlen(outputDir) + 17];
     snprintf(outputFileName, sizeof(outputFileName), "%s/step_%d", outputDir,
              numSteps);
@@ -229,6 +230,7 @@ int main(int argc, char **argv) {
                             MPI_STATUS_IGNORE);
     }
     MPI_File_close(&outFile);
+    io_ticks += getticks() - t0;
   }
   double total_time = (double)(end_t - start_t) / 512000000.0;
   double comm_time = (double)comm_ticks / 512000000.0;

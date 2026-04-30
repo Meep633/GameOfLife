@@ -194,6 +194,7 @@ int main(int argc, char** argv)
 
   // Write the final step outside the timed window (always, for validation).
   {
+    t0 = getticks();
     char outputFileName[strlen(outputDir) + 17];
     snprintf(outputFileName, sizeof(outputFileName), "%s/step_%d", outputDir, numSteps);
     MPI_File_open(MPI_COMM_WORLD, outputFileName, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &outFile);
@@ -206,6 +207,7 @@ int main(int argc, char** argv)
       MPI_File_write_at_all(outFile, byte_offset, start, s, MPI_C_BOOL, MPI_STATUS_IGNORE);
     }
     MPI_File_close(&outFile);
+    io_ticks += getticks() - t0;
   }
   double total_time   = (double)(end   - start)   / 512000000.0;
   double comm_time    = (double)comm_ticks          / 512000000.0;
