@@ -2,7 +2,27 @@
 
 This directory contains the scripts and tools needed to run the Strong and Weak scaling benchmarks for both the MPI-only (`conway-mpi`) and MPI+CUDA (`conway`) implementations of Conway's Game of Life on the AiMOS (DCS) cluster.
 
-## 1. Prerequisites (Generating Boards)
+## 1. Building the Binaries
+
+Before running anything, compile the necessary binaries using the provided `Makefile`:
+
+```bash
+make all
+```
+This will compile `conway` (MPI+CUDA), `conway-mpi` (MPI only), and `conway-basic`.
+
+---
+
+## 2. Configuration & Paths
+
+**IMPORTANT:** Before running the scripts, you must update the path variables so they point to your actual directories:
+
+1. **`merge_results.sh`**: Change `SCRATCH=/gpfs/u/home/PCPG/$USER/scratch` to point to your actual scratch or results directory. Otherwise, the script will fail to find your generated CSVs.
+2. **`run_all.sh`**: Ensure `RESULTS="../results"` points to your desired output directory, and that `STRONG_BOARD` and `WEAK_BOARDS` correctly point to where you generated the boards.
+
+---
+
+## 3. Prerequisites (Generating Boards)
 
 Before running the benchmarks, ensure you have generated the necessary board files.
 
@@ -22,7 +42,7 @@ python3 generate_board.py 1600 1600 0.7 board_1600.bin
 
 ---
 
-## 2. Running the Benchmarks
+## 4. Running the Benchmarks
 
 ```bash
 bash run_all.sh
@@ -35,7 +55,7 @@ bash run_all.sh
 
 ---
 
-## 3. Merging the Results
+## 5. Merging the Results
 
 Once **all** jobs have finished running (they no longer appear in `squeue`), you need to merge the scattered CSV outputs into consolidated result files for plotting.
 
@@ -52,7 +72,7 @@ This will create a clean `all_results.csv` inside each experiment's folder:
 
 ---
 
-## 4. Generating Graphs
+## 6. Generating Graphs
 
 With your merged `all_results.csv` files ready, use the Python plotting script to generate performance graphs:
 
@@ -61,7 +81,7 @@ python3 generate_graphs.py
 ```
 *(Make sure the paths inside `generate_graphs.py` point to the `../results` directories generated above).*
 
-## 5. Cleanup
+## 7. Cleanup
 
 ```
 rm -r ../results
