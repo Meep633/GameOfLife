@@ -1,8 +1,0 @@
-NOTE: NVMe not available, using GPFS fallback: /gpfs/u/scratch/PCPG/PCPGnhnx/results/tmp_job_4268868
-=== np=1 | binary=conway | steps=100 | job=4268868 ===
-Nodes=1 | Tasks/Node=1
-Script dir: /gpfs/u/home/PCPG/PCPGnhnx/scratch/p
-Input: /gpfs/u/scratch/PCPG/PCPGnhnx/results/tmp_job_4268868/board_strong.bin
-
-Rank  0 | Total:   0.0217 s | Comm:   0.0000 s (  0.1%) | Compute:   0.0059 s ( 27.1%) | IO:   0.0158 s ( 72.7%)
-Done. Results in /gpfs/u/scratch/PCPG/PCPGnhnx/results/strong_cuda/np_1/results_np1.csv

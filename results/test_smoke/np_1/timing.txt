@@ -1,6 +1,0 @@
-=== np=1 | binary=conway | steps=5 | job=4268867 ===
-Nodes=1 | Tasks/Node=1
-Script dir: /gpfs/u/home/PCPG/PCPGnhnx/scratch/p
-Input: /gpfs/u/scratch/PCPG/PCPGnhnx/results/tmp_job_4268867/board_strong.bin
-
-Rank  0 | Total:   0.0169 s | Comm:   0.0000 s (  0.0%) | Compute:   0.0006 s (  3.8%) | IO:   0.0163 s ( 96.2%)
