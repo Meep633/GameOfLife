@@ -49,12 +49,13 @@ submit_one() {
 
 if [[ "$MODE" == "strong" ]]; then
   INPUT=$2
-  submit_one  1  1  1  4 "$INPUT"
-  submit_one  4  1  4  4 "$INPUT"
-  submit_one  9  3  3  3 "$INPUT"
-  submit_one 16  4  4  4 "$INPUT"
-  submit_one 25  5  5  5 "$INPUT"
-  submit_one 36  6  6  6 "$INPUT"
+  submit_one  1  1  1  6 "$INPUT"
+  submit_one  4  1  4  6 "$INPUT"
+  submit_one  16  1  16  6 "$INPUT"
+  submit_one  25  1  25  6 "$INPUT"
+  submit_one  64  2  32  6 "$INPUT"
+  submit_one  100  4  25  6 "$INPUT"
+  submit_one  256  8  32  6 "$INPUT"
 
 elif [[ "$MODE" == "weak" ]]; then
   BOARDS_DIR=$2
